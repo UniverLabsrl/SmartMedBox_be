@@ -1,0 +1,40 @@
+name: Deploy Laravel to Server
+
+on:
+  push:
+    branches:
+      - main  
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: Checkout Repository
+      uses: actions/checkout@v3
+
+    - name: Deploy via SSH
+      uses: appleboy/ssh-action@v0.1.10
+      with:
+        host: ${{ secrets.SERVER_IP }}
+        username: ${{ secrets.SERVER_USER }}
+        key: ${{ secrets.SSH_PRIVATE_KEY }}
+        script: |
+          cd /var/www/html/smartmedbox-be
+          git pull origin main
+          
+          # Imposta i permessi per Laravel
+          chown -R gianluca:www-data storage bootstrap/cache
+          chmod -R 775 storage bootstrap/cache
+
+          # Installa le dipendenze e ottimizza il codice
+          composer install --no-dev --optimize-autoloader
+
+          # Esegui le migrazioni del database
+          php artisan migrate --force
+
+          # Pulisci e aggiorna la cache di Laravel
+          php artisan config:clear
+          php artisan cache:clear
+          php artisan route:clear
+          php artisan view:clear

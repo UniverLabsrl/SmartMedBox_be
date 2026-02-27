@@ -8,9 +8,9 @@ import pandas as pd
 
 # ===== CONFIG =====
 DB_CONFIG = {
-    'host': '127.0.0.1',
-    'user': 'root',
-    'password': '',
+    'host': 'localhost',
+    'user': 'smartmedbox',
+    'password': '6cdshb9teDsmaHb',
     'database': 'smartmedbox'
 }
 
